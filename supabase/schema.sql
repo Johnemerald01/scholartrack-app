@@ -106,22 +106,31 @@ alter table public.scholarships enable row level security;
 alter table public.saved_scholarships enable row level security;
 
 -- profiles: owner only
-create policy 'profiles_select_own' on public.profiles
+drop policy if exists profiles_select_own on public.profiles;
+create policy profiles_select_own on public.profiles
   for select to authenticated using ((select auth.uid()) = id);
-create policy 'profiles_insert_own' on public.profiles
+
+drop policy if exists profiles_insert_own on public.profiles;
+create policy profiles_insert_own on public.profiles
   for insert to authenticated with check ((select auth.uid()) = id);
-create policy 'profiles_update_own' on public.profiles
+
+drop policy if exists profiles_update_own on public.profiles;
+create policy profiles_update_own on public.profiles
   for update to authenticated
   using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
-create policy 'profiles_delete_own' on public.profiles
+
+drop policy if exists profiles_delete_own on public.profiles;
+create policy profiles_delete_own on public.profiles
   for delete to authenticated using ((select auth.uid()) = id);
 
 -- scholarships: public read of active rows; writes via service role only
-create policy 'scholarships_public_read' on public.scholarships
+drop policy if exists scholarships_public_read on public.scholarships;
+create policy scholarships_public_read on public.scholarships
   for select to anon, authenticated using (is_active = true);
 
 -- saved_scholarships: owner only, all operations
-create policy 'saved_owner_all' on public.saved_scholarships
+drop policy if exists saved_owner_all on public.saved_scholarships;
+create policy saved_owner_all on public.saved_scholarships
   for all to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
